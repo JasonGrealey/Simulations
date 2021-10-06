@@ -21,6 +21,11 @@ where:
 --seed fixes the random seed 
 
 --epi_model is the epistatic model of interactions present within the phenotype for each pair from NEPIs number of SNPs.
+    must be either: 
+      1. m16 (default - is a heterozygote heterozygote interaction)
+      2. T (threshold interaction - which is model m11 in Li and Reich - A complete enumeration and classification of two-locus disease models https://pubmed.ncbi.nlm.nih.gov/10899752/ - PMID: 10899752 DOI: 10.1159/000022939) 
+      3. XOR (exlusive or interaction - which is model m78 in Li and Reich) 
+      4. RR (recessive recessive interaction - which is model m1 in Li and Reich ) 
 
 --loadstr is the file (with extension) containing SNPs on the rows and samples on the columns. Currently the file should be in hdf5 format - https://pandas.pydata.org/docs/reference/api/pandas.read_hdf.html - however, there are functions in the code that can be used to read CSV.
 
