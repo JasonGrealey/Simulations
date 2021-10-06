@@ -1,6 +1,6 @@
 # Simulations
 
-This file contains the script used to simulate continuous epistatic traits from Grealey et al (in preparation). 
+This file contains the script used to simulate continuous epistatic traits from Grealey et al (in preparation) 2021. 
 
 The intake for the file requires a file (either CSV or hdf5 format) which has SNPs in the rows and samples in the columns. 
 
