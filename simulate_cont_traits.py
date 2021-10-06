@@ -3,13 +3,7 @@ import pandas as pd
 import numpy as np
 from sys import argv
 import time,random
-'''import matplotlib
-count=0
-count=count+1
-print(count)
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-'''
+
 import seaborn as sns
 import argparse
 import os
@@ -20,17 +14,14 @@ from sklearn.metrics import explained_variance_score
 from sklearn.linear_model import LinearRegression
 
 '''
-simulate_cont_traits_chunk.py loads in the dataframe created from running genotypes_processing.py
-
-to run 6 inputs needed:
-input1:option - string -  detailing if epistatic interactions should be modelled or not
-input2:loadstring - string - of what dataframe/file we are loading in for the genotypes
-input3:runno - integer - (not important for simulation - can be anything) but keeps track of saved files for numerous runs. i.e. If we simulated 2000 times, runno would go from 1...2000
-input4:sigmabeta - float - standard deviation of the distribution (normal usually) from which we pull the beta values
-input5:sigmagamma - float - standard deviation of the distribution (normal usually) from which we pull the gamma values which are our epistatic interactions
-input6:rescaleval - float - a number to which rescale the mean of the beta distribution (only in use when we are having our beta sampled distribution as a function of minor allele frequency)
+input:option - string -  detailing if epistatic interactions should be modelled or not
+input:loadstring - string - of what dataframe/file we are loading in for the genotypes
+input:runno - integer - (not important for simulation - can be anything) but keeps track of saved files for numerous runs. i.e. If we simulated 2000 times, runno would go from 1...2000
+input:sigmabeta - float - standard deviation of the distribution (normal usually) from which we pull the beta values
+input:sigmagamma - float - standard deviation of the distribution (normal usually) from which we pull the gamma values which are our epistatic interactions
+input:rescaleval - float - a number to which rescale the mean of the beta distribution (only in use when we are having our beta sampled distribution as a function of minor allele frequency)
 '''
-#plt.style.use('ggplot')
+
 from numpy import count_nonzero
 def t_model(dataframe,loci,locj,indexs):
 		'''
@@ -405,10 +396,7 @@ def load_rows_small(dataframe,neff,maf_constraint,nsnps,ncols):
 	return df
 
 def main():
-		#random.seed(1) #REPRODUCIBILITY IF NEEDED
-
 		from datetime import date
-
 		today = date.today()
 		print("Today's date:", today)
 		print(str(sys.argv))
@@ -418,7 +406,6 @@ def main():
 		print(currentDirectory)
 		start=time.time()#TIMING RUN
 		print(str(sys.argv))
-		#start=time.time()#TIMING RUN
 		my_path = str(os.getcwd()) # Figures out the absolute path for you in case your working directory moves around.
 		parser = argparse.ArgumentParser()
 		parser.add_argument('--option', action='store', default='epistatic',
@@ -532,8 +519,6 @@ def main():
 		#print(samples)
 		#sys.exit(0)
 		dfpheno=pd.Series(0,index=samples,dtype=float)#CREATING THE  phenotype lists
-		#dfpheno2=pd.Series(0,index=samples,dtype=float)#CREATING THE phenotype lists
-		#NOTE MAF = 2*AA + AC + 0*GG WHICH IS SUM OF 0,1,2 / 2 *NUMBER OF SAMPLES
 
 		global effect_snps
 		effect_snps=load_any_snp_hdf(loadstring,numeff,nrows)
@@ -545,7 +530,6 @@ def main():
 		print(SNPs_effect)
 		print(SNPs_epi)
 		
-		#print(effectsnps)
 		scalingconst=rescaleval*float(np.mean(effect_snps.maf.values))
 		mu_eqn=beta_baseline/scale_factor
 		#now we are hitting interactions
@@ -734,11 +718,7 @@ def main():
 								print("new factor {}".format(factor_scale_noise))
 
 						pheno=np.add(total_genetics,environmentaleffect)
-						#pheno=np.add(main_genetics,environmentaleffect)#main effects + noise
 						print(pheno.shape)
-						#pheno=np.add(pheno,epistatic)#adding epistatic effects
-						#print("adding")
-						#dfpheno=np.add(dfpheno,environmentaleffect)
 						print(pheno)
 				else:#nonepistatic phenotypes	
 						print("this has not been implemented")
@@ -863,11 +843,8 @@ def main():
 
 				#sys.exit(0)
 				print("rescaling")
-				#print(dfpheno.to_frame())
-				#dfpheno.columns=['phenotype']
 				print(outstring)
 				effect_snps.to_csv(outstring+"/effectsnps"+"numsnp"+str(alleff)+'sigmabeta'+str(sigmabeta)+'sigmagamma'+str(sigmagamma)+'sigmanoise'+str(sigmanoise)+'-'+str(runno)+'repeats'+str(repeats)+'-'+str(l)+".csv")
-				#print(epi_snps)
 				#epi_snps.to_csv(outstring+"/episnps"+"numsnp"+str(alleff)+'sigmabeta'+str(sigmabeta)+'sigmagamma'+str(sigmagamma)+'sigmanoise'+str(sigmanoise)+'-'+str(runno)+'repeats'+str(repeats)+'-'+str(l)+".csv")
 				epistatic.to_csv(outstring+"/epitatic_contributions"+"numsnp"+str(alleff)+'sigmabeta'+str(sigmabeta)+'sigmagamma'+str(sigmagamma)+'sigmanoise'+str(sigmanoise)+'-'+str(runno)+'repeats'+str(repeats)+'-'+str(l)+".csv")
 				np.save(outstring+"/unscaled_epistatic_paired_effect_sizes"+"numsnp"+str(alleff)+'sigmabeta'+str(sigmabeta)+'sigmagamma'+str(sigmagamma),epi_var)
@@ -896,66 +873,5 @@ def main():
 				#	f.write('%d' % scale)
 				#	f.write('%d' % s
 
-				#-----------------------------------fitting---------------------------------------------------------------------
-		'''print("plotting now")
-		import matplotlib
-		matplotlib.use('Agg')
-		import matplotlib.pyplot as plt
-		plt.style.use('ggplot')
-
-		import matplotlib.pylab as pylab
-		params = {'legend.fontsize': 'x-large',
-		  'figure.figsize': (15, 10),
-		 'axes.labelsize': 'x-large',
-		 'axes.titlesize':'x-large',
-		 'xtick.labelsize':'x-large',
-				'font.size':9,
-		 'ytick.labelsize':'x-large'}
-
-		pylab.rcParams.update(params)
-		print(my_path+'/plots/numeffstaticdists'+str(alleff)+'sigmabeta'+str(sigmabeta)+'sigmanoise'+str(sigmanoise)+'-runno-'+str(runno)+'rescale'+str(rescaleval)+'.pdf')
-		#DISTRIBUTIONs
-		#PLOTTING BETA DISTRIBUTIONS
-		#plt.subplot(121)
-		#sns.kdeplot(effectsnps.beta.values, shade=True,label=str(numeff)+" Effective SNPs, Sig: "+str(sigmabeta))
-		sns.distplot(effect_snps.beta.values,label="Linear")#"{} Eff SNPs, \ncentre {:.3f}\nsig: {:.2f}".format(alleff,mu_eqn,sigmabeta))#, Sig: "+str(sigmabeta))
-		sns.distplot(epi_snps.loc[SNPs_epi]['beta'].values,label="Epistatic")
-		plt.title('Density of Linear Effect Sizes')
-		plt.ylabel('Density')
-		plt.xlabel('Effect Sizes')
-		#plt.legend(loc='upper left')#str(numeff)+" Effective SNPs")
-		plt.legend(loc='upper right')
-		plt.savefig(outstring+"/beta_dist_Neff_"+str(numeff)+"Nepi_"+str(numepi)+"_herit_"+str(herit)+"epi"+str(epi_model)+str(epi_level)+"_distributions.pdf",bbox_inches='tight')#
-		#plt.suptitle('Effect Size and Phenotype Distributions', fontsize=16)
-		#plt.subplot(122)
-		plt.show()
-		#sns.kdeplot(dfpheno.values,shade=True,label=str(len(samples))+" Simulated Samples, Sig: "+str(sigmanoise))
-		sns.distplot(dfpheno.values,hist=True,label="Heritability: "+str(herit)+"\nEpistatic Proportion: "+str(epi_level))
-		plt.legend(loc='upper left')
-		plt.title("Density of Phenotype")
-		plt.xlabel('Phenotype')
-		plt.ylabel('Density')
-		plt.savefig(outstring+"/phenotype_dist_Neff_"+str(numeff)+"Nepi_"+str(numepi)+"_herit_"+str(herit)+"epi"+str(epi_model)+str(epi_level)+"_distributions.pdf",bbox_inches='tight')#"y_path + '/plots/distributions-numeff'+str(alleff)+'sigmabeta'+str(sigmabeta)+'beta_baseline'+str(beta_baseline)+'sigmanoise'+str(sigmanoise)+'-runno-'+str(runno)+'numruns'+str(repeats)+'.pdf', bbox_inches='tight')
-		plt.show()
-		plt.figure(figsize=(13,8))
-		sns.distplot(environmentaleffect)
-		plt.title("Density of Noise")
-		plt.ylabel('Density')
-		plt.xlabel('Noise')
-		plt.savefig(outstring+"/Noise_dist_Neff_"+str(numeff)+"Nepi_"+str(numepi)+"_herit_"+str(herit)+"epi"+str(epi_model)+str(epi_level)+"_distributions.pdf",bbox_inches='tight')#
-		plt.figure(figsize=(13,8))
-		sns.distplot(epistatic)
-		plt.title("Density of Epistatis")
-		plt.ylabel('Density')
-		plt.xlabel('Total Epistasis')
-		plt.savefig(outstring+"/total_epistasis_dist_Neff_"+str(numeff)+"Nepi_"+str(numepi)+"_herit_"+str(herit)+"epi"+str(epi_model)+str(epi_level)+"_distributions.pdf",bbox_inches='tight')#
-		plt.figure(figsize=(13,8))
-		sns.distplot(epi_var)
-		plt.title("Density of Epistatic Effect Sizes")
-		plt.ylabel('Density')
-		plt.xlabel('Epistatic Effects')
-		plt.savefig(outstring+"/epistatic_effect_sizes_dist_Neff_"+str(numeff)+"Nepi_"+str(numepi)+"_herit_"+str(herit)+"epi"+str(epi_model)+str(epi_level)+"_distributions.pdf",bbox_inches='tight')#
-		print("\n\nFinished simulating!\nphenotype with "+str(numeff)+" Linear SNPs \n"+str(numepi)+" Epistatic SNPs \n"+str(herit)+" heritability\n"+str(epi_model)+" model with epistatic proportion "+str(epi_level))
-		'''
 if __name__ == '__main__':
 		main()
