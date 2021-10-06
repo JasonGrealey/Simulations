@@ -27,7 +27,8 @@ where:
       3. XOR (exlusive or interaction - which is model m78 in Li and Reich) 
       4. RR (recessive recessive interaction - which is model m1 in Li and Reich ) 
 
---loadstr is the file (with extension) containing SNPs on the rows and samples on the columns. Currently the file should be in hdf5 format - https://pandas.pydata.org/docs/reference/api/pandas.read_hdf.html - however, there are functions in the code that can be used to read CSV.
+--loadstr is the file (with extension) containing SNPs on the rows and samples on the columns. Currently the file should be in HDF5 format - https://pandas.pydata.org/docs/reference/api/pandas.read_hdf.html - however, there are functions in the code that can be used to read CSV.
+    Note if in HDF5 format the current 'key' is 'data' which will need to be adapted to a given file. HDF5 is used as there is a lot of I/O in this program and pandas read_csv function can be quite slow for this.
 
 --outdir is the directory where the files will be saved - it is okay if the directory is in existence, however, any files will be overwritten if they have the same savestring (Seed, number of SNPs etc). Best to keep these directories separate.
 
